@@ -1,6 +1,6 @@
 # Matthews Correlation Coefficient Loss for Deep Convolutional Networks: Application to Skin Lesion Segmentation
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 MCC Loss is now available in [smp Segmentation Models PyTorch](https://smp.readthedocs.io/en/stable/losses.html#segmentation_models_pytorch.losses.MCCLoss) as `smp.losses.MCCLoss`.
 
@@ -28,4 +28,27 @@ year = {2021}
 
 ## Usage
 
-An example usage is shown in `Example.ipynb`, where the Dice and MCC losses are calculated for a simple scenario of 5x5 ground truth and predicted binary masks.
+```python
+from loss import MCCLoss
+
+# Default: probabilities in, batch-wise reduction
+criterion = MCCLoss()
+y_pred = torch.rand(4, 1, 128, 128)          # predicted probabilities
+y_true = torch.randint(0, 2, (4, 1, 128, 128)).float()
+loss = criterion(y_pred, y_true)
+
+# With raw logits (before sigmoid)
+criterion = MCCLoss(from_logits=True)
+loss = criterion(logits, masks)
+
+# Per-sample reduction (compute MCC per sample, then average)
+criterion = MCCLoss(reduction="sample")
+```
+
+A simple example with 5×5 binary masks is shown in `Example.ipynb`.
+
+## Tests
+
+```bash
+python -m pytest test_mcc.py -v
+```
